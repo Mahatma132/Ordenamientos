@@ -1,0 +1,252 @@
+#include <iostream>
+#define TAM 50
+
+class Alumno{
+private:
+    std::string nombre;
+    std::string carrera;
+    std::string preparatoria;
+    float promedio;
+public:
+    Alumno(){};
+    friend std::ostream & operator<<(std::ostream &O, Alumno &x){
+         O<<"\n Nombre: "<<x.nombre<<std::endl;
+         O<<"\n Carrera: "<<x.carrera<<std::endl;
+         O<<"\n preparatoria: "<<x.preparatoria<<std::endl;
+         O<<"\n Promedio: "<<x.promedio<<std::endl;
+         return O;
+    }
+
+    friend std::istream & operator>>(std::istream &O, Alumno &x){
+            std::cout<<"\n Nombre: ";
+            O>>x.nombre;
+            std::cout<<"\n Carrera:";
+            O>>x.carrera;
+            std::cout<<"\n preparatoria:";
+            O>>x.preparatoria;
+            std::cout<<"\n Promedio:";
+            O>>x.promedio;
+            return O;
+    }
+
+        bool operator == (Alumno &a){
+            return nombre == a.nombre && carrera == a.carrera && preparatoria == a.preparatoria && promedio == a.promedio;
+        }
+
+        bool operator <(Alumno &a)
+        {
+            return promedio<a.promedio;
+        }
+};
+
+template<class T>
+class Cola{
+private:
+    T datos[TAM];
+    int ult;
+    bool inserta(T , int);
+    bool elimina(int);
+    int primero()const;
+    int ultimo()const;
+public:
+    Cola():ult(-1){}
+    bool vacia()const;
+    bool llena()const;
+    bool  Queue(T&);
+    bool Dequeue();
+    int Binaria(T&);
+    void insercion();
+    T Front()const;
+
+};
+template<class T>
+void Cola<T>::insercion()
+{
+    T aux;
+    for(int i=0;i<=ult;i++)
+    {
+        aux=datos[i];
+        int j=i;
+        while(j>0 && aux<datos[j-1])
+        {
+            datos[j]=datos[j-1];
+            j=j-1;
+        }
+        if(i!=j)
+        {
+            datos[j]=aux;
+            i=i+1;
+        }
+    }
+}
+template<class T>
+int Cola<T>::Binaria(T& dat)
+{
+    int i=0;
+    int j=ult;
+     int medio=0;
+    while(i<=j)
+    {
+    medio=(i+j)/2;
+    if(datos[medio]==dat)
+    {
+        return medio;
+    }
+    if(dat<datos[medio])
+    {
+        j=medio-1;
+    }
+    else
+    {
+        i=medio+1;
+    }
+    }
+    return -1;
+}
+
+template<class T>
+T Cola<T>::Front()const{
+    T x=datos[primero()];
+    return x;
+}
+
+template<class T>
+bool Cola<T>::Dequeue(){
+    if(vacia()){
+        return false;
+    }
+    else{
+        elimina(primero());
+    }
+    return true;
+}
+
+template<class T>
+bool Cola<T>::Queue(T& elem){
+    if(llena()){
+        return false;
+    }
+    if(vacia()){
+        inserta(elem,0);
+    }
+    else{
+        inserta(elem, ultimo()+1);
+    }
+    return true;
+}
+
+template<class T>
+bool Cola<T>::vacia()const{
+    return ult==-1;
+}
+
+template<class T>
+bool Cola<T>::llena()const{
+    return ult==TAM-1;
+}
+
+template<class T>
+bool Cola<T>::inserta(T elem, int pos){
+    if(llena() || pos<0 || pos>ult+1){
+        std::cout<<"\n No se pudo insertar";
+        return false;
+    }
+    int i=ult+1;
+    while(i>pos){
+        datos[i]=datos[i-1];
+        i--;
+    }
+    datos[pos]=elem;
+    ult++;
+    return true;
+}
+
+template<class T>
+bool Cola<T>::elimina(int pos){
+    if(vacia() || pos<0 || pos>ult){
+        std::cout<<"\n No se pudo eliminar";
+        return false;
+    }
+    int i=pos;
+    while(i<ult){
+        datos[i]=datos[i+1];
+        i++;
+    }
+    ult--;
+    return true;
+}
+
+template<class T>
+int Cola<T>::primero()const{
+    if(vacia()){
+       return -1;
+    }
+    return 0;
+}
+
+template<class T>
+int Cola<T>::ultimo()const{
+    if(vacia()){
+       return -1;
+    }
+    return ult;
+}
+
+int main()
+{
+    Cola<Alumno> MiCola;
+    Alumno x;
+    int menu;
+    do
+    {
+    std::cout<<"\n1.Solicitud a constancia\n2.Elaborar constancia\n3.Ordenar\n4.Buscar\n5.Salir\nSelecciona una opcion: "<<std::endl;
+    std::cin>>menu;
+        switch(menu)
+        {
+        case 1:
+
+            std::cout<<"Datos de la constancia"<<std::endl;
+            std::cin>>x;
+            MiCola.Queue(x);
+            break;
+        case 2:
+            if(MiCola.vacia()){
+             std::cout<<"Cola vacia"<<std::endl;
+             }
+             else
+             {
+             x=MiCola.Front();
+             std::cout<<x<<std::endl;
+             MiCola.Dequeue();
+             }
+             break;
+        case 3:
+            MiCola.insercion();
+            std::cout<<"La Cola de solicitudes se ha ordenado";
+            break;
+        case 4:
+             if(!MiCola.vacia())
+             {
+                std::cout<<"Datos a buscar"<<std::endl;
+                std::cin>>x;
+                if(MiCola.Binaria(x) !=-1)
+                {
+                  std::cout<<"La posicion de tu constancia es: "<<MiCola.Binaria(x)<<std::endl;
+                }
+                else
+                {
+                    std::cout<<"Los datos no se han encontrado"<<std::endl;
+                }
+             }
+             else
+                {
+                    std::cout<<"No hay constancias en cola"<<std::endl;
+                }
+            break;
+        case 5:
+            break;
+        }
+    }while(menu!=5);
+
+    return 0;
+}
